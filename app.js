@@ -3,7 +3,7 @@ const messageEl= document.querySelector('#message')
 const boardboxes=document.querySelectorAll('div')
 console.dir(boardboxes)
 const winningcombs=['012','345','678','036','147','258','048','246']
-
+const resetGame=document.querySelector('#reset')
 /*---------------------------- Variables (state) ----------------------------*/
 let gameDone=false
 let turn='X'
@@ -52,7 +52,7 @@ function matchChecker(turn){
      // turns and one of the remaining two empty spaces to check if a win combination
      // is possible to continue the game
 
-    if(movesCounter>=7){
+    if((movesCounter>=7)&&(gameDone===false)){
         //Tcurrent
         let TcurrentGame1=(turnRecored(turn))
         let TcurrentGame2=(turnRecored(turnFlip(turn)))
@@ -92,17 +92,34 @@ function turnFlip(turn){
         return 'X'
     }
 }
+function resetboard(){
+    boardboxes.forEach((element,index)=>{ 
+        element.textContent=''
+    })
+    gameDone=false
+    turn='X'
+    movesCounter=0
+    messageEl.textContent=`its ${turn} turn`
+
+}
 /*----------------------------- Event Listeners -----------------------------*/
 boardboxes.forEach((box, index) => {
     box.addEventListener('click', () => {
         
         if((gameDone!==true)&&(box.textContent==="")){
             selectbox(turn, index)
-            matchChecker(turn)
+            //we cant see a wining combination until board has 5 or more moves since its iterative 
+            if(movesCounter>=5){
+                matchChecker(turn)
+            }
             if(gameDone!==true){
-                turn=turnFlip(turn)
-                messageEl.textContent=`its ${turn} turn`
+                    turn=turnFlip(turn)
+                    messageEl.textContent=`its ${turn} turn`
+                
             }
         }
     })
+})
+resetGame.addEventListener('click',()=>{
+    resetboard()
 })
